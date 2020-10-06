@@ -7,6 +7,19 @@ class BeklemeSuresiException(Exception):
     pass
 
 
+class XPathNoneException(Exception):
+    """Raised when the dersxPath None"""
+    pass
+
+
+class KullaniciAdiGirilmemisException(Exception):
+    pass
+
+
+class SifreGirilmemisException(Exception):
+    pass
+
+
 class DersAlmaBotu:
     webSayfasi = "https://obs.atauni.edu.tr"
     kullaniciAdiInputID = "UserName"
@@ -30,6 +43,11 @@ class DersAlmaBotu:
         self.driver.get(self.webSayfasi)
 
     def girisYap(self, kullanici_adi, sifre):
+        if not kullanici_adi:
+            raise KullaniciAdiGirilmemisException('Kullanici adi girilmemis.')
+        if not sifre:
+            raise SifreGirilmemisException('Sifre girilmemis.')
+
         username_in = self.driver.find_element_by_id(self.kullaniciAdiInputID)
         pass_in = self.driver.find_element_by_id(self.sifreInputID)
         username_in.send_keys(kullanici_adi)
@@ -57,7 +75,9 @@ class DersAlmaBotu:
         self.sayfayiKaydir()
         self.sayfayiKaydir()
 
-    def dersleriAl(self, ):
+    def dersleriAl(self):
+        if not self.dersxPath:
+            raise XPathNoneException("Derslerin xpath'lerini girmeniz gerkiyor.")
         dersler = [self.driver.find_element_by_xpath(xpath) for xpath in self.dersxPath]
 
         for ders in dersler:
@@ -71,6 +91,7 @@ class DersAlmaBotu:
 
 
 bot = DersAlmaBotu()
+bot.dersxPath = ['//*[@id="id_48896"]', '//*[@id="id_32611"]']
 bot.girisSayfasiniGoster()
 bot.girisYap("", "")
 bot.dersAlmaSayfasiniGoster()
